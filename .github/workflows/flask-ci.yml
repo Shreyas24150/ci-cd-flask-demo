@@ -27,3 +27,15 @@ jobs:
     - name: Run Flask app test
       run: |
         echo "✅ Flask runs"
+
+    - name: Deploy to EC2
+      uses: appleboy/ssh-action@v0.1.7
+      with:
+        host: ${{ secrets.EC2_HOST }}
+        username: ${{ secrets.EC2_USER }}
+        key: ${{ secrets.EC2_SSH_KEY }}
+        script: |
+          cd ci-cd-flask-demo
+          git pull origin main
+          pkill -f app.py || true
+          nohup python3 app.py > app.log 2>&1 &
